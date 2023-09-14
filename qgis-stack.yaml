@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+  qgis-server:
+    # Should use version with utf-8 locale support:
+    image: qgis-server:latest
+    volumes:
+    - ${HOME}/qgis-server/data:/data:ro
+    environment:
+    - LANG=en_EN.UTF-8
+    - QGIS_PROJECT_FILE=/data/osm.qgs
+    - QGIS_SERVER_LOG_LEVEL=0  # INFO (log all requests)
+    - DEBUG=1                  # display env before spawning QGIS Server
+
+  nginx:
+    image: nginx:1.13
+    ports:
+    - 8080:80
+    volumes:
+    - ${HOME}/qgis-server/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+    - qgis-server
